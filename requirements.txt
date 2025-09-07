@@ -1,0 +1,30 @@
+# Campus Event Management Platform - Dependencies
+# Core FastAPI and web framework
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+
+# Database and ORM
+sqlalchemy==2.0.23
+# sqlite3 is built-in with Python
+
+# Data validation and serialization
+pydantic[email]==2.5.0
+email-validator==2.1.0
+
+# Template engine
+jinja2==3.1.2
+
+# HTTP client for testing
+httpx==0.25.2
+
+# Development and testing
+pytest==7.4.3
+pytest-asyncio==0.21.1
+
+# Optional: For production deployment
+gunicorn==21.2.0
+
+# Optional: For enhanced logging
+python-multipart==0.0.6
+
+# CORS is handled by FastAPI's built-in middleware

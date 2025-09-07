@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Event Management - Admin Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .sidebar {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.8);
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin: 4px 0;
+            transition: all 0.3s;
+        }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+        .main-content {
+            background-color: #f8f9fa;
+            min-height: 100vh;
+        }
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+        }
+        .table th {
+            background-color: #f8f9fa;
+            border-top: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 sidebar p-0">
+                <div class="p-3">
+                    <h4 class="text-white mb-4">
+                        <i class="fas fa-graduation-cap me-2"></i>
+                        Campus Events
+                    </h4>
+                    <nav class="nav flex-column">
+                        <a class="nav-link active" href="#dashboard" onclick="showSection('dashboard')">
+                            <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                        </a>
+                        <a class="nav-link" href="#events" onclick="showSection('events')">
+                            <i class="fas fa-calendar-alt me-2"></i> Events
+                        </a>
+                        <a class="nav-link" href="#students" onclick="showSection('students')">
+                            <i class="fas fa-users me-2"></i> Students
+                        </a>
+                        <a class="nav-link" href="#attendance" onclick="showSection('attendance')">
+                            <i class="fas fa-check-circle me-2"></i> Attendance
+                        </a>
+                        <a class="nav-link" href="#feedback" onclick="showSection('feedback')">
+                            <i class="fas fa-star me-2"></i> Feedback
+                        </a>
+                        <a class="nav-link" href="#reports" onclick="showSection('reports')">
+                            <i class="fas fa-chart-bar me-2"></i> Reports
+                        </a>
+                        <a class="nav-link" href="#colleges" onclick="showSection('colleges')">
+                            <i class="fas fa-building me-2"></i> Colleges
+                        </a>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10 main-content">
+                <div class="p-4">
+                    <!-- Header -->
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2 id="page-title">Dashboard</h2>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-outline-primary" onclick="refreshData()">
+                                <i class="fas fa-sync-alt me-1"></i> Refresh
+                            </button>
+                            <button class="btn btn-primary" onclick="showCreateModal()">
+                                <i class="fas fa-plus me-1"></i> Create Event
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Dashboard Section -->
+                    <div id="dashboard-section" class="content-section">
+                        <div class="row mb-4">
+                            <div class="col-md-3">
+                                <div class="card stat-card">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between">
+                                            <div>
+                                                <h6 class="card-title">Total Events</h6>
+                                                <h3 id="total-events">0</h3>
+                                            </div>
+                                            <i class="fas fa-calendar-alt fa-2x opacity-75"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card stat-card">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between">
+                                            <div>
+                                                <h6 class="card-title">Total Students</h6>
+                                                <h3 id="total-students">0</h3>
+                                            </div>
+                                            <i class="fas fa-users fa-2x opacity-75"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card stat-card">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between">
+                                            <div>
+                                                <h6 class="card-title">Active Events</h6>
+                                                <h3 id="active-events">0</h3>
+                                            </div>
+                                            <i class="fas fa-play-circle fa-2x opacity-75"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="card stat-card">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between">
+                                            <div>
+                                                <h6 class="card-title">Total Registrations</h6>
+                                                <h3 id="total-registrations">0</h3>
+                                            </div>
+                                            <i class="fas fa-clipboard-list fa-2x opacity-75"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5>Recent Events</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-hover">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Event</th>
+                                                        <th>Type</th>
+                                                        <th>Date</th>
+                                                        <th>Registrations</th>
+                                                        <th>Status</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="recent-events-table">
+                                                    <!-- Dynamic content -->
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5>Quick Actions</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="d-grid gap-2">
+                                            <button class="btn btn-primary" onclick="showSection('events')">
+                                                <i class="fas fa-plus me-2"></i>Create New Event
+                                            </button>
+                                            <button class="btn btn-outline-primary" onclick="showSection('students')">
+                                                <i class="fas fa-user-plus me-2"></i>Add Student
+                                            </button>
+                                            <button class="btn btn-outline-primary" onclick="showSection('attendance')">
+                                                <i class="fas fa-check-circle me-2"></i>Mark Attendance
+                                            </button>
+                                            <button class="btn btn-outline-primary" onclick="showSection('reports')">
+                                                <i class="fas fa-chart-bar me-2"></i>View Reports
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Events Section -->
+                    <div id="events-section" class="content-section" style="display: none;">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5>Event Management</h5>
+                                <button class="btn btn-primary" onclick="showCreateEventModal()">
+                                    <i class="fas fa-plus me-1"></i> Create Event
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <div class="row mb-3">
+                                    <div class="col-md-4">
+                                        <input type="text" class="form-control" id="event-search" placeholder="Search events...">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <select class="form-select" id="event-type-filter">
+                                            <option value="">All Types</option>
+                                            <option value="Conference">Conference</option>
+                                            <option value="Workshop">Workshop</option>
+                                            <option value="Sports">Sports</option>
+                                            <option value="Cultural">Cultural</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <select class="form-select" id="event-status-filter">
+                                            <option value="">All Status</option>
+                                            <option value="active">Active</option>
+                                            <option value="completed">Completed</option>
+                                            <option value="cancelled">Cancelled</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button class="btn btn-outline-primary w-100" onclick="filterEvents()">
+                                            <i class="fas fa-filter me-1"></i> Filter
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Title</th>
+                                                <th>Type</th>
+                                                <th>Start Time</th>
+                                                <th>Capacity</th>
+                                                <th>Registrations</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="events-table">
+                                            <!-- Dynamic content -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Students Section -->
+                    <div id="students-section" class="content-section" style="display: none;">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5>Student Management</h5>
+                                <button class="btn btn-primary" onclick="showCreateStudentModal()">
+                                    <i class="fas fa-plus me-1"></i> Add Student
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <div class="row mb-3">
+                                    <div class="col-md-6">
+                                        <input type="text" class="form-control" id="student-search" placeholder="Search students...">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <select class="form-select" id="college-filter">
+                                            <option value="">All Colleges</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <button class="btn btn-outline-primary w-100" onclick="filterStudents()">
+                                            <i class="fas fa-filter me-1"></i> Filter
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Student ID</th>
+                                                <th>Name</th>
+                                                <th>Email</th>
+                                                <th>College</th>
+                                                <th>Phone</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="students-table">
+                                            <!-- Dynamic content -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Attendance Section -->
+                    <div id="attendance-section" class="content-section" style="display: none;">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Attendance Tracking</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row mb-3">
+                                    <div class="col-md-4">
+                                        <select class="form-select" id="attendance-event-select">
+                                            <option value="">Select Event</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <input type="text" class="form-control" id="student-search-attendance" placeholder="Search student...">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button class="btn btn-primary w-100" onclick="loadEventAttendance()">
+                                            <i class="fas fa-search me-1"></i> Load Attendance
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Student</th>
+                                                <th>Student ID</th>
+                                                <th>Check-in Time</th>
+                                                <th>Check-out Time</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="attendance-table">
+                                            <!-- Dynamic content -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Feedback Section -->
+                    <div id="feedback-section" class="content-section" style="display: none;">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Feedback Management</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Event</th>
+                                                <th>Student</th>
+                                                <th>Rating</th>
+                                                <th>Comment</th>
+                                                <th>Submitted</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="feedback-table">
+                                            <!-- Dynamic content -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reports Section -->
+                    <div id="reports-section" class="content-section" style="display: none;">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5>Event Popularity</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-sm">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Event</th>
+                                                        <th>Registrations</th>
+                                                        <th>Capacity</th>
+                                                        <th>%</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="popularity-table">
+                                                    <!-- Dynamic content -->
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5>Top Students</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table table-sm">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Student</th>
+                                                        <th>Events Attended</th>
+                                                        <th>Attendance Rate</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="top-students-table">
+                                                    <!-- Dynamic content -->
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Colleges Section -->
+                    <div id="colleges-section" class="content-section" style="display: none;">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5>College Management</h5>
+                                <button class="btn btn-primary" onclick="showCreateCollegeModal()">
+                                    <i class="fas fa-plus me-1"></i> Add College
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Name</th>
+                                                <th>Location</th>
+                                                <th>Contact Email</th>
+                                                <th>Students</th>
+                                                <th>Events</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="colleges-table">
+                                            <!-- Dynamic content -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals will be added here -->
+    <div id="modals-container"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/admin.js"></script>
+</body>
+</html>
