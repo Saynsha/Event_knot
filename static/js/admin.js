@@ -265,7 +265,7 @@ function showCreateEventModal() {
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-primary" onclick="createEvent()">Create Event</button>
+                        <button type="button" class="btn btn-primary" onclick="submitCreateEvent()">Create Event</button>
                     </div>
                 </div>
             </div>
@@ -280,7 +280,7 @@ function showCreateEventModal() {
     populateCollegeDropdown('eventCollege');
 }
 
-async function createEvent() {
+async function submitCreateEvent() {
     const form = document.getElementById('createEventForm');
     if (!form.checkValidity()) {
         form.reportValidity();
