@@ -779,3 +779,249 @@ function editEvent(eventId) {
             const endVal = formatDateTimeLocal(event.end_time);
 
             const modal = `
+                <div class="modal fade" id="editEventModal" tabindex="-1">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Edit Event</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="editEventForm">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Event Title *</label>
+                                                <input type="text" class="form-control" id="editEventTitle" value="${event.title}" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Event Type *</label>
+                                                <select class="form-select" id="editEventType" required>
+                                                    <option ${event.event_type==='Conference'?'selected':''} value="Conference">Conference</option>
+                                                    <option ${event.event_type==='Workshop'?'selected':''} value="Workshop">Workshop</option>
+                                                    <option ${event.event_type==='Sports'?'selected':''} value="Sports">Sports</option>
+                                                    <option ${event.event_type==='Cultural'?'selected':''} value="Cultural">Cultural</option>
+                                                    <option ${event.event_type==='Academic'?'selected':''} value="Academic">Academic</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Description</label>
+                                        <textarea class="form-control" id="editEventDescription" rows="3">${event.description??''}</textarea>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Start Time *</label>
+                                                <input type="datetime-local" class="form-control" id="editEventStartTime" value="${startVal}" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">End Time *</label>
+                                                <input type="datetime-local" class="form-control" id="editEventEndTime" value="${endVal}" required>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label class="form-label">Location</label>
+                                                <input type="text" class="form-control" id="editEventLocation" value="${event.location??''}">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="mb-3">
+                                                <label class="form-label">Max Capacity *</label>
+                                                <input type="number" class="form-control" id="editEventCapacity" value="${event.max_capacity}" min="1" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="mb-3">
+                                                <label class="form-label">Status</label>
+                                                <select class="form-select" id="editEventStatus">
+                                                    <option ${event.status==='active'?'selected':''} value="active">Active</option>
+                                                    <option ${event.status==='completed'?'selected':''} value="completed">Completed</option>
+                                                    <option ${event.status==='cancelled'?'selected':''} value="cancelled">Cancelled</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary" onclick="submitEventUpdate(${event.id})">Save Changes</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+
+            document.getElementById('modals-container').innerHTML = modal;
+            new bootstrap.Modal(document.getElementById('editEventModal')).show();
+        });
+}
+
+function submitEventUpdate(eventId) {
+    const form = document.getElementById('editEventForm');
+    if (!form.checkValidity()) { form.reportValidity(); return; }
+
+    const payload = {
+        title: document.getElementById('editEventTitle').value,
+        description: document.getElementById('editEventDescription').value,
+        event_type: document.getElementById('editEventType').value,
+        start_time: document.getElementById('editEventStartTime').value + ':00',
+        end_time: document.getElementById('editEventEndTime').value + ':00',
+        location: document.getElementById('editEventLocation').value,
+        max_capacity: parseInt(document.getElementById('editEventCapacity').value),
+        status: document.getElementById('editEventStatus').value
+    };
+
+    apiCall(`/events/${eventId}`, 'PUT', payload).then(result => {
+        if (result) {
+            showAlert('Event updated successfully!', 'success');
+            bootstrap.Modal.getInstance(document.getElementById('editEventModal')).hide();
+            loadEvents();
+            loadDashboardData();
+        }
+    });
+}
+
+function deleteEvent(eventId) {
+    if (!confirm('Are you sure you want to cancel this event?')) { return; }
+    apiCall(`/events/${eventId}`, 'DELETE').then(result => {
+        if (result) {
+            showAlert('Event cancelled successfully!', 'success');
+            loadEvents();
+            loadDashboardData();
+        }
+    });
+}
+
+function editCollege(collegeId) {
+    apiCall(`/colleges/${collegeId}`).then(college => {
+        if (!college) return;
+        const modal = `
+            <div class="modal fade" id="editCollegeModal" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Edit College</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="editCollegeForm">
+                                <div class="mb-3">
+                                    <label class="form-label">Name</label>
+                                    <input class="form-control" id="collegeName" value="${college.name}" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Location</label>
+                                    <input class="form-control" id="collegeLocation" value="${college.location??''}">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Contact Email</label>
+                                    <input class="form-control" id="collegeEmail" value="${college.contact_email??''}">
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary" onclick="submitCollegeUpdate(${college.id})">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        document.getElementById('modals-container').innerHTML = modal;
+        new bootstrap.Modal(document.getElementById('editCollegeModal')).show();
+    });
+}
+
+function submitCollegeUpdate(collegeId) {
+    const payload = {
+        name: document.getElementById('collegeName').value,
+        location: document.getElementById('collegeLocation').value,
+        contact_email: document.getElementById('collegeEmail').value
+    };
+    apiCall(`/colleges/${collegeId}`, 'PUT', payload).then(result => {
+        if (result) {
+            showAlert('College updated!', 'success');
+            bootstrap.Modal.getInstance(document.getElementById('editCollegeModal')).hide();
+            loadColleges();
+        }
+    });
+}
+
+function showCreateCollegeModal() {
+    const modal = `
+        <div class="modal fade" id="createCollegeModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add College</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="createCollegeForm">
+                            <div class="mb-3">
+                                <label class="form-label">Name *</label>
+                                <input class="form-control" id="newCollegeName" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Location</label>
+                                <input class="form-control" id="newCollegeLocation">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Contact Email</label>
+                                <input class="form-control" id="newCollegeEmail" type="email">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" onclick="createCollege()">Create</button>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+    document.getElementById('modals-container').innerHTML = modal;
+    new bootstrap.Modal(document.getElementById('createCollegeModal')).show();
+}
+
+function createCollege() {
+    const form = document.getElementById('createCollegeForm');
+    if (!form.checkValidity()) { form.reportValidity(); return; }
+
+    const payload = {
+        name: document.getElementById('newCollegeName').value,
+        location: document.getElementById('newCollegeLocation').value,
+        contact_email: document.getElementById('newCollegeEmail').value
+    };
+
+    apiCall('/colleges/', 'POST', payload).then(result => {
+        if (result) {
+            showAlert('College created successfully!', 'success');
+            bootstrap.Modal.getInstance(document.getElementById('createCollegeModal')).hide();
+            loadColleges();
+        }
+    });
+}
+
+function formatDateTimeLocal(isoString) {
+    if (!isoString) return '';
+    const d = new Date(isoString);
+    const pad = n => String(n).padStart(2, '0');
+    const yyyy = d.getFullYear();
+    const mm = pad(d.getMonth()+1);
+    const dd = pad(d.getDate());
+    const hh = pad(d.getHours());
+    const mi = pad(d.getMinutes());
+    return `${yyyy}-${mm}-${dd}T${hh}:${mi}`;
+}
+
+function showCreateModal() {
+    showCreateEventModal();
+}
